@@ -65,10 +65,6 @@
 
 }
 
-.jazzberry .key:hover {
-
-}
-
 .jazzberry .key:active {
   box-shadow: inset 1px 1px 1px black;
   transition: border 195ms;

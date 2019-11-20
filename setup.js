@@ -33,7 +33,7 @@ $.fn.jazzberry = function() {
     },
     active: {
       SHOW: {
-        view: (t)       => text(seconds2str(t))
+        view: (t)  => text(seconds2str(t))
       },
       RESET: {
         exec: (t)  => ["paused", t],
