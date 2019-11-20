@@ -71,3 +71,8 @@
 }
 
 
+.jazzberry[data-state=idle] { background-color: hsl(0,0%,100%); }
+.jazzberry[data-state=active] { background-color: hsl(210,70%,80%); }
+.jazzberry[data-state=paused] { background-color: hsl(120,70%,80%); }
+.jazzberry[data-state=notifying] { background-color: hsl(0,100%,50%); }
+

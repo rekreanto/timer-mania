@@ -99,6 +99,7 @@ $.fn.jazzberry = function() {
       let new_state = transition.exec.apply(null, [...event_args,...state_args]);
       self.removeClass(state[0]).addClass(new_state[0]);
       state = new_state; 
+      timer.attr("data-state",state[0]);
       console.log("new state", state);
     } else {
       console.log(`the event "${event_label}" has no meaning in the state "${state_label}"`);
