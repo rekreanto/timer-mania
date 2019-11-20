@@ -10,48 +10,59 @@ $.fn.jazzberry = function() {
   let state =["_"];
   let transitions = {
     _: {
-      INIT: () => ["idle", 0, 0, 0, 0],
+      INIT: {
+        exec: () => ["idle", 0, 0, 0, 0],
+      },
     },
     idle: {
-      NUM:   (digit, a, b, c, d) => ["idle", digit, a, b, c],
-      START: (a, b, c, d) => ["active", (a + 10 * b + 60 * (c + 10*d))],
-      RESET: () => ["idle", 0, 0, 0, 0],
+      SHOW: {
+        view: (a,b,c,d) => text(`${d}${c}:${b}${a}`),
+      },
+      NUM:   {
+        exec: (digit, a, b, c, d) => ["idle", digit, a, b, c],
+        view: (digit)             => text(digit),
+      },
+      START: {
+        exec: (a, b, c, d) => ["active", (a + 10 * b + 60 * (c + 10*d))],
+        view: ()           => icon("play_arrow"),
+      },
+      RESET: {
+        exec: () => ["idle", 0, 0, 0, 0],
+        view: () => icon("clear"),
+      },
     },
     active: {
-      RESET: (t)  => ["paused", t],
-      DECR: (t)   => t===0? ["notifying", t]:["active", t-1],
+      SHOW: {
+        view: (t)       => text(seconds2str(t))
+      },
+      RESET: {
+        exec: (t)  => ["paused", t],
+        view: ()   => icon("pause"),
+      },
+      DECR: {
+        exec: (t)   => t===0? ["notifying", t]:["active", t-1],
+        view: (t)   => t===0? icon("alarm"): text("-1"),
+      },
     },
     paused: {
-      START: (t)  => ["active", t],      
-      RESET: (t)  => ["idle", 0,0,0,0],
+      START: {
+        exec: (t)  => ["active", t],
+        view: ()   => icon("play_arrow"),
+      },      
+      RESET: {
+        exec: (t)  => ["idle", 0,0,0,0],
+        view:  ()  => icon("stop"),
+      },
     },
     notifying: {
-      DECR: () => ["idle", 0, 0, 0, 0],
+      DECR: {
+        exec: () => ["idle", 0, 0, 0, 0],
+        view: () => icon("alarm_off"),
+      },
     },
   };
 
-  let decorations = {
-    idle: {
-      SHOW: (a,b,c,d) => text(`${d}${c}:${b}${a}`),
-      NUM: (digit)    => text(digit),
-      START: ()       => icon("play_arrow"),
-      RESET: ()       => icon("clear"),
-    },
-    active: {
-      SHOW: (t)       => text(seconds2str(t)),
-      RESET: ()       => icon("pause"),
-      DECR: (t)       => t===0? icon("alarm"): text("-1"),
-    },
-    paused: {
-      START : ()      => icon("play_arrow"),
-      RESET : ()      => icon("stop"), 
-    },
-    notifying: {
-      DECR: ()        => icon("alarm_off"),
 
-    },
-  };
-  
   var seconds2str = (t) => {
     t = Math.abs(t);
     let m = Math.floor(t/60);
@@ -61,20 +72,14 @@ $.fn.jazzberry = function() {
   
   let bindings = []; // [[elem, event]]
   
-  function get_transition(table,event,state){
-    let [state_label, ...state_args] = state;
-    let [event_label, ...event_args] = event;
-     return table[state_label][event_label];
-  }
   function update_ui(){
     let [state_label, ...state_args] = state;
     for(let [[ui,ev], [event_label, ...event_args]] of bindings){
-      let decoration = decorations[state_label][event_label];
-      if(decoration){
+      let tr = transitions[state_label][event_label];
+      if(tr){
          // decorate
          ui.removeClass("disabled");
-
-        let [jq_method,...jq_args] = decoration.apply(null,[...event_args,...state_args]);
+        let [jq_method,...jq_args] = tr.view.apply(null,[...event_args,...state_args]);
         ui[jq_method].apply(ui,jq_args);
       } else {
         // disable
@@ -91,7 +96,7 @@ $.fn.jazzberry = function() {
     //console.log("TR", state_label, event_label,transition);
     // transit
     if(transition){
-      let new_state = transition.apply(null, [...event_args,...state_args]);
+      let new_state = transition.exec.apply(null, [...event_args,...state_args]);
       self.removeClass(state[0]).addClass(new_state[0]);
       state = new_state; 
       console.log("new state", state);
