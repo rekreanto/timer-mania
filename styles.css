@@ -1,0 +1,77 @@
+* {
+  transition: all 0.195s;
+}
+
+.insert-jazzberry .active {
+  background-color: hsl(120,70%,90%);
+  color: red;
+}
+
+.disabled {
+  color: #888  !important;
+  background-color: #aaa !important;
+}
+.insert-jazzberry {
+  width: 200px;
+}
+.jazzberry {
+  width: 100%;
+  height: 100%;
+  border: solid thin black;
+  border-radius: 26px;
+  display: grid;
+  grid-gap: 20px;
+  padding: 10px;
+
+}
+
+.jazzberry__display {
+  text-align: center;
+  font-size: 64px;
+  background-color: #eee;
+  padding: 10px;
+  margin-bottom: 0px;
+  border-radius: 20px 20px 0 0 ;
+
+}
+
+.jazzberry__numpad {
+  display: grid;
+  grid-gap: 8px;
+  grid-template-areas: 
+    "k7 k8 k9"
+    "k4 k5 k6"
+    "k1 k2 k3"
+    ".. k0 .."
+  ;
+}
+
+.jazzberry__controlpad {
+  display: grid;
+  grid-gap: 8px;
+  grid-template-areas: 
+    "reset start"
+    "decr decr"
+  ;
+}
+
+.jazzberry .key {
+  display: inline-block;
+  padding: 10px;
+  background-color: hsl(60, 60%, 80%);
+  box-shadow: 1px 1px 1px black;
+  border-radius: 25px;
+  text-align: center;
+
+}
+
+.jazzberry .key:hover {
+
+}
+
+.jazzberry .key:active {
+  box-shadow: inset 1px 1px 1px black;
+  transition: border 195ms;
+}
+
+
